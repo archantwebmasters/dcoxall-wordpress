@@ -1,11 +1,11 @@
-class wordpress::mysql(
+class webserver::mysql(
   $user     = 'wordpress',
   $password = 'wordpress',
   $database = 'wordpress',
 ) {
   package { [
     "mysql-server",
-    "php5-mysql",
+    "php-mysql",
   ]: }
 
   exec { "mysql_install_db":
@@ -13,8 +13,8 @@ class wordpress::mysql(
     require => Package["mysql-server"],
   }
   exec { "create_db":
-    command => "mysql -u root -e 'CREATE DATABASE $database;'",
-    unless  => "mysql -u root $database -e 'SELECT 1;'",
+    command => "sudo mysql -u root -e 'CREATE DATABASE $database;'",
+    unless  => "sudo mysql -u root $database -e 'SELECT 1;'",
     require => Exec["mysql_install_db"],
   }
   exec { "create_user":
@@ -25,7 +25,7 @@ GRANT ALL PRIVILEGES ON $database.* TO '$user'@'localhost';
 CREATE USER '$user'@'%' IDENTIFIED BY '$password';
 GRANT ALL PRIVILEGES ON $database.* TO '$user'@'%';
 \"",
-    unless  => "mysql -u $user --password=$password $database -e 'SELECT 1;'",
+    unless  => "sudo mysql -u $user --password=$password $database -e 'SELECT 1;'",
     require => Exec["create_db"],
   }
 }

@@ -16,7 +16,7 @@
 #
 # Darren Coxall <darren@darrencoxall.com>
 #
-class wordpress(
+class webserver(
   $cache    = false,
   $database = 'wordpress',
   $user     = 'wordpress',
@@ -26,21 +26,16 @@ class wordpress(
     path => "/usr/bin",
   }
 
-  exec { "apt-get update": }
-
-  class { "wordpress::mysql":
+  class { "webserver::mysql":
     database => $database,
     user     => $user,
     password => $password,
-    require  => Exec["apt-get update"]
   }
 
-  class { "wordpress::nginx":
+  class { "webserver::nginx":
     cache   => $cache,
-    require => Exec["apt-get update"]
   }
 
-  class { "wordpress::php":
-    require => Exec["apt-get update"]
+  class { "webserver::php":
   }
 }
